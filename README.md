@@ -133,7 +133,11 @@ thorns_project 分布式异步队列系统
 	你的请访问：http://youip:8080/
 
 
+<<<<<<< HEAD
 使用说明
+=======
+使用说明(可客户端发起任务也可http api发起任务)
+>>>>>>> FETCH_HEAD
 -----------------------------------
 #### 命令行调用
 	在你的任意一台worker客户端，或者thorns服务端
@@ -141,7 +145,10 @@ thorns_project 分布式异步队列系统
 	$ python run.py 42.62.52.1-42.62.62.254 188
 	$ python run.py 42.62.52.1-254 189
 	均可以向redis压入nmap扫描任务，worker客户端的分布式集群会自动分发任务执行，并存储到后台数据库
+<<<<<<< HEAD
 	记得修改wyportmap.py里面的扫描结果，存到你自己的数据库
+=======
+>>>>>>> FETCH_HEAD
 	
 	reinhard-mbp:thorns reinhard$ python run.py 42.62.52.1-254 189
 	--------------------------------------------------
@@ -158,6 +165,10 @@ thorns_project 分布式异步队列系统
 	* AsyncResult:ddcf9486-09d9-4dd2-9bb4-2618e6a161b8
 	--------------------------------------------------
 
+<<<<<<< HEAD
+=======
+	记得修改wyportmap.py里面的扫描结果，存到你自己的数据库
+>>>>>>> FETCH_HEAD
 	wyportmap相关帮助: https://github.com/ring04h/wyportmap
 
 #### HTTP API 远程调用
