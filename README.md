@@ -50,7 +50,7 @@ thorns_project 分布式异步队列系统
 
 #### 安装 MySQL-python
 	$ sudo yum -y install python-devel mysql-devel subversion-devel
-	$ sudo pip install MySQL-python sqlalcehemy
+	$ sudo pip install MySQL-python SQLAlchemy
 
 #### 安装 Celery
 	$ sudo pip install -U celery[redis]
@@ -102,7 +102,7 @@ thorns_project 分布式异步队列系统
 
 	# 安装 MySQL-python
 	$ sudo yum -y install python-devel mysql-devel subversion-devel
-	$ sudo pip install MySQL-python sqlalcehemy
+	$ sudo pip install MySQL-python SQLAlchemy
 
 	# 安装 nmap
 	# 32位系统
