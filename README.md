@@ -23,25 +23,60 @@ thorns_project 分布式异步队列系统
 * MysQL
 * Celery
 * Tornado
+* Supervisord
 
 安装配置说明
 -----------------------------------
-## CentOS
-#### 安装 Redis-Server
-	
+## CentOS 服务端
 
-#### 安装 MySQL-python
-	sudo yum -y install python-devel mysql-devel subversion-devel
-	sudo pip install MySQL-python
+#### 安装 Redis-Server
+	$ wget http://download.redis.io/releases/redis-2.8.19.tar.gz
+	$ tar xzf redis-2.8.19.tar.gz
+	$ cd redis-2.8.19
+	$ make
+	$ sudo cp src/redis-server /usr/bin/
+	$ sudo cp redis.conf /etc/redis.conf
+	/* 修改 /etc/redis.conf 37行，将daemonize no改为daemonize yes，让redis后台运行 */
+	$ sudo vim /etc/redis.conf
+	daemonize yes
+	# 启动Redis-Server
+	$ sudo redis-server /etc/redis.conf
 
 #### 安装 pip
-	wget https://pypi.python.org/packages/source/p/pip/pip-6.0.8.tar.gz
-	tar zvxf pip-6.0.8.tar.gz
-	cd pip-6.0.8
-	sudo python setup.py install
-#### 安装 Celery
+	$ wget https://pypi.python.org/packages/source/p/pip/pip-6.0.8.tar.gz
+	$ tar zvxf pip-6.0.8.tar.gz
+	$ cd pip-6.0.8
+	$ sudo python setup.py install
 
-#### 安装 Flower
+#### 安装 MySQL-python
+	$ sudo yum -y install python-devel mysql-devel subversion-devel
+	$ sudo pip install MySQL-python
+	$ sudo pip install sqlalcehemy
+
+#### 安装 Celery
+	$ sudo pip install -U celery[redis]
+
+#### 安装 Flower & 现在thorns运行环境代码
+	$ cd /home/
+	$ sudo yum -y install git
+	$ git clone https://github.com/ring04h/thorns.git
+	$ cd /home/thorns/src
+	$ tar zvxf flower.tar.gz
+	$ cd flower-0.7.3
+	$ python setup.py install
+	/* 启动Flower 这里的redis ip可以配置为你的外网的IP */
+	celery flower --port=8080 --broker=redis://127.0.0.1:6379/0 &
+	建议使用Supervisord的守护进程来启动Flower，确保系统7*24小时的稳定性
+
+#### 安装 Supervisord
+	$ sudo pip install supervisor
+	$ sudo cp /home/thorns/src/supervisord_server.conf /etc/supervisord.conf
+	/* 修改 /etc/supervisord.conf 141行 修改redis ip为你自己的ip --broker=redis://127.0.0.1:6379/0 */
+	/* 修改 /etc/supervisord.conf 153行 修改programe为你想定义的worker名称 [program:worker-guangzhou] */
+	$ sudo vim /etc/supervisord.conf
+	/* 启动 supervisord */
+	$ supervisord -c /etc/supervisord.conf
+	http://127.0.0.1:9001/ 可以在线守护管理thorns的进程，实现远程重启
 
 使用说明
 -----------------------------------
@@ -51,7 +86,7 @@ thorns_project 分布式异步队列系统
     
     远程调用HTTP API启动一个nmap扫描任务：
     $ curl -X POST -d '{"args":["42.62.52.62",2222]}' http://thorns.wuyun.org:8080/api/task/send-task/tasks.nmap_dispath
-    
+
     强制结束一个正在执行的任务：
     $ curl -X POST -d 'terminate=True' http://thorns.wuyun.org:8088/api/task/revoke/a9361c1b-fd1d-4f48-9be2-8656a57e906b
 
