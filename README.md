@@ -56,7 +56,7 @@ thorns_project 分布式异步队列系统
 #### 安装 Celery
 	$ sudo pip install -U celery[redis]
 
-#### 安装 Flower & 现在thorns运行环境代码
+#### 安装 Flower & 下载thorns运行环境代码
 	$ cd /home/
 	$ sudo yum -y install git
 	$ git clone https://github.com/ring04h/thorns.git
@@ -65,7 +65,7 @@ thorns_project 分布式异步队列系统
 	$ cd flower-0.7.3
 	$ python setup.py install
 	/* 启动Flower 这里的redis ip可以配置为你的外网的IP */
-	celery flower --port=8080 --broker=redis://127.0.0.1:6379/0 &
+	$ celery flower --port=8080 --broker=redis://127.0.0.1:6379/0 &
 	建议使用Supervisord的守护进程来启动Flower，确保系统7*24小时的稳定性
 
 #### 安装 Supervisord
@@ -78,6 +78,17 @@ thorns_project 分布式异步队列系统
 	$ supervisord -c /etc/supervisord.conf
 	http://127.0.0.1:9001/ 可以在线守护管理thorns的进程，实现远程重启
 
+#### 检查各服务是否正常启动后，开始配置客户端任务脚本
+	1、http://youip:8080/  thorns 控制台
+	2、http://youip:9001/  supervisord 控制台
+	3、修改tasks.py内的芹菜配置
+	对应你自己的redis-server服务器IP
+	BROKER_URL = 'redis://120.132.54.90:6379/0',
+	对应你自己的MySQL-server服务器IP
+	CELERY_RESULT_BACKEND = 'db+mysql://celery:celery1@3Wscan@42.62.52.62:443/wscan',
+
+	配置完毕后，就可以部署多台客户端进行分布式任务执行了
+
 使用说明
 -----------------------------------
 #### HTTP API 远程调用
@@ -86,7 +97,6 @@ thorns_project 分布式异步队列系统
     
     远程调用HTTP API启动一个nmap扫描任务：
     $ curl -X POST -d '{"args":["42.62.52.62",2222]}' http://thorns.wuyun.org:8080/api/task/send-task/tasks.nmap_dispath
-
     强制结束一个正在执行的任务：
     $ curl -X POST -d 'terminate=True' http://thorns.wuyun.org:8088/api/task/revoke/a9361c1b-fd1d-4f48-9be2-8656a57e906b
 
