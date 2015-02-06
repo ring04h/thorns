@@ -11,12 +11,10 @@ def start_nmap_dispath(targets, taskid=None):
 	print '-' * 50
 	target_list = make_target_list(targets)
 
-	print target_list
-
 	for target in target_list:
 		print '-' * 50
 		print '* push %s to Redis' % target
-		# print '* AsyncResult:%s' % nmap_dispath.delay(target,taskid=taskid)
+		print '* AsyncResult:%s' % nmap_dispath.delay(target,taskid=taskid)
 
 	print '-' * 50
 	print '* Push nmapscan tasks complete.'
