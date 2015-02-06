@@ -92,11 +92,12 @@ thorns_project 分布式异步队列系统
 使用说明
 -----------------------------------
 #### HTTP API 远程调用
+    远程调用HTTP API启动一个nmap扫描任务：
+    $ curl -X POST -d '{"args":["42.62.52.62",2222]}' http://thorns.wuyun.org:8080/api/task/send-task/tasks.nmap_dispath
+    
     重启 worker 线程池:
     $ curl -X POST http://thorns.wuyun.org:8080/api/worker/pool/restart/myworker
     
-    远程调用HTTP API启动一个nmap扫描任务：
-    $ curl -X POST -d '{"args":["42.62.52.62",2222]}' http://thorns.wuyun.org:8080/api/task/send-task/tasks.nmap_dispath
     强制结束一个正在执行的任务：
     $ curl -X POST -d 'terminate=True' http://thorns.wuyun.org:8088/api/task/revoke/a9361c1b-fd1d-4f48-9be2-8656a57e906b
 
