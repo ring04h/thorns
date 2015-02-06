@@ -76,6 +76,9 @@ def make_target_list(targets):
 				if startip_num <= endip_num:
 					target_count =  endip_num - startip_num
 					if target_count >= 0:
+						target_list.append(num2ip(startip_num))
+						# 每10个IP分配到一个wyportmap子进程上
+						# 更新：为每个独立的IP创建一个单独的任务，并删除掉开始IP，修改的时候注释掉上面那行
 						for i in xrange(0,(target_count+process_nmap_count-1)/process_nmap_count):
 							ip_count = (i * process_nmap_count) + process_nmap_count
 							remaining_count = target_count - ip_count
@@ -83,13 +86,15 @@ def make_target_list(targets):
 								scan_startip = num2ip(startip_num)
 								endip_num = startip_num + process_nmap_count
 								startip_num = endip_num
-								target_option = '%s-%s' % (scan_startip, num2ip(endip_num))
+								# target_option = '%s-%s' % (scan_startip, num2ip(endip_num))
+								target_option = num2ip(endip_num)
 								target_list.append(target_option)
 							else:
 								scan_startip = num2ip(startip_num)
 								endip_num = startip_num + process_nmap_count + remaining_count
 								startip_num = endip_num
-								target_option = '%s-%s' % (scan_startip, num2ip(endip_num))
+								# target_option = '%s-%s' % (scan_startip, num2ip(endip_num))
+								target_option = num2ip(endip_num)
 								target_list.append(target_option)
 				else:
 					print '* EndIP Less than StartIP'
