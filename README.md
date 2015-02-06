@@ -133,8 +133,33 @@ thorns_project 分布式异步队列系统
 	你的请访问：http://youip:8080/
 
 
-使用说明
+使用说明(可客户端发起任务也可http api发起任务)
 -----------------------------------
+#### 命令行调用
+	在你的任意一台worker客户端，或者thorns服务端
+	$ cd /home/thorns/
+	$ python run.py 42.62.52.1-42.62.62.254 188
+	$ python run.py 42.62.52.1-254 189
+	均可以向redis压入nmap扫描任务，worker客户端的分布式集群会自动分发任务执行，并存储到后台数据库
+	
+	reinhard-mbp:thorns reinhard$ python run.py 42.62.52.1-254 189
+	--------------------------------------------------
+	* push 42.62.52.1 to Redis
+	* AsyncResult:23147d02-294d-41e5-84e5-5e1b15e72fc4
+	--------------------------------------------------
+	* push 42.62.52.2 to Redis
+	* AsyncResult:542984a4-4434-475f-9a62-bfc81206ea57
+	--------------------------------------------------
+	* push 42.62.52.3 to Redis
+	* AsyncResult:7d005661-d719-41ef-babc-4c853b2c49cc
+	--------------------------------------------------
+	* push 42.62.52.4 to Redis
+	* AsyncResult:ddcf9486-09d9-4dd2-9bb4-2618e6a161b8
+	--------------------------------------------------
+
+	记得修改wyportmap.py里面的扫描结果，存到你自己的数据库
+	wyportmap相关帮助: https://github.com/ring04h/wyportmap
+
 #### HTTP API 远程调用
     重启 worker 线程池:
     $ curl -X POST http://thorns.wuyun.org:8080/api/worker/pool/restart/myworker
