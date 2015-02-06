@@ -50,8 +50,7 @@ thorns_project 分布式异步队列系统
 
 #### 安装 MySQL-python
 	$ sudo yum -y install python-devel mysql-devel subversion-devel
-	$ sudo pip install MySQL-python
-	$ sudo pip install sqlalcehemy
+	$ sudo pip install MySQL-python sqlalcehemy
 
 #### 安装 Celery
 	$ sudo pip install -U celery[redis]
@@ -72,7 +71,7 @@ thorns_project 分布式异步队列系统
 	$ sudo pip install supervisor
 	$ sudo cp /home/thorns/src/supervisord_server.conf /etc/supervisord.conf
 	/* 修改 /etc/supervisord.conf 141行 修改redis ip为你自己的ip --broker=redis://127.0.0.1:6379/0 */
-	/* 修改 /etc/supervisord.conf 153行 修改programe为你想定义的worker名称 [program:worker-guangzhou] */
+	/* 修改 /etc/supervisord.conf 153行 修改programe为你想定义的worker名称 [program:worker-ringzero] */
 	$ sudo vim /etc/supervisord.conf
 	/* 启动 supervisord */
 	$ supervisord -c /etc/supervisord.conf
@@ -89,15 +88,60 @@ thorns_project 分布式异步队列系统
 
 	配置完毕后，就可以部署多台客户端进行分布式任务执行了
 
+## CentOS 客户端（建议大规模部署）
+	# 安装 git & 下载 thorns_project
+	$ sudo yum -y install git
+	$ cd /home/
+	$ git clone https://github.com/ring04h/thorns.git
+
+	# 安装 pip
+	$ wget https://pypi.python.org/packages/source/p/pip/pip-6.0.8.tar.gz
+	$ tar zvxf pip-6.0.8.tar.gz
+	$ cd pip-6.0.8
+	$ sudo python setup.py install
+
+	# 安装 MySQL-python
+	$ sudo yum -y install python-devel mysql-devel subversion-devel
+	$ sudo pip install MySQL-python sqlalcehemy
+
+	# 安装 nmap
+	# 32位系统
+	$ sudo rpm -vhU https://nmap.org/dist/nmap-6.47-1.i386.rpm
+	# 64位系统
+	$ sudo rpm -vhU https://nmap.org/dist/nmap-6.47-1.x86_64.rpm
+
+	# 安装 Celery
+	$ sudo pip install -U celery[redis]
+
+	# 安装 Supervisord
+	$ sudo pip install supervisor
+	$ sudo cp /home/thorns/src/supervisord_client.conf /etc/supervisord.conf
+	/* 修改 /etc/supervisord.conf 140行 修改programe为你想定义的worker名称 [program:worker-ringzero] */
+	$ sudo vim /etc/supervisord.conf
+	/* 启动 supervisord */
+	$ supervisord -c /etc/supervisord.conf
+	http://127.0.0.1:9001/ 可以在线守护管理thorns的进程，实现远程重启
+
+	# 修改tasks.py内的芹菜配置（分布式任务关键配置项）
+	对应你自己的redis-server服务器IP
+	BROKER_URL = 'redis://120.132.54.90:6379/0',
+	对应你自己的MySQL-server服务器IP
+	CELERY_RESULT_BACKEND = 'db+mysql://celery:celery1@3Wscan@42.62.52.62:443/wscan',
+
+	# 环境搭建完毕，这时候访问thorns project的控制台，就会发现worker客户端已经出现在那里
+	演示地址：http://thorns.wuyun.org:8080/
+	你的请访问：http://youip:8080/
+
+
 使用说明
 -----------------------------------
 #### HTTP API 远程调用
-    远程调用HTTP API启动一个nmap扫描任务：
-    $ curl -X POST -d '{"args":["42.62.52.62",2222]}' http://thorns.wuyun.org:8080/api/task/send-task/tasks.nmap_dispath
-    
     重启 worker 线程池:
     $ curl -X POST http://thorns.wuyun.org:8080/api/worker/pool/restart/myworker
     
+    远程调用HTTP API启动一个nmap扫描任务：
+    $ curl -X POST -d '{"args":["42.62.52.62",2222]}' http://thorns.wuyun.org:8080/api/task/send-task/tasks.nmap_dispath
+
     强制结束一个正在执行的任务：
     $ curl -X POST -d 'terminate=True' http://thorns.wuyun.org:8088/api/task/revoke/a9361c1b-fd1d-4f48-9be2-8656a57e906b
 
